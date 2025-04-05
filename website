@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Soundless Alchemy</title>
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('https://chat.openai.com/mnt/data/occult_background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Inter', sans-serif;
+      color: #d5bfff;
+      height: 100vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.88);
+      min-height: 100vh;
+      padding: 3rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      z-index: 2;
+      position: relative;
+    }
+
+    h1 {
+      font-family: 'UnifrakturCook', cursive;
+      font-size: 3.5rem;
+      color: #b184ff;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: #cdb9ff;
+      margin-bottom: 2rem;
+    }
+
+    .content {
+      max-width: 850px;
+      font-size: 1.1rem;
+      line-height: 1.9;
+      background: rgba(25, 15, 40, 0.5);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(128, 90, 213, 0.4);
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    ul li::before {
+      content: '✦ ';
+      color: #a06dfd;
+    }
+
+    .btn {
+      margin-top: 2rem;
+      padding: 0.8rem 1.5rem;
+      border: 2px solid #a06dfd;
+      background: transparent;
+      color: #d5bfff;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: #a06dfd33;
+    }
+
+    /* Visualizer */
+    .visualizer-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    audio {
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <h1>Soundless Alchemy</h1>
+    <h2>Mastery Through Silence & Spirit</h2>
+    <div class="content">
+      <p>I am Gabriel, the mind behind SoundlessAlchemy — a movement, a method, and a legacy. Through the art of silence, the alchemy of the soul, and relentless self-mastery, I walk the hidden path.</p>
+
+      <p>This sacred space is where the inner journey becomes visual, audible, and eternal. Here you’ll find the disciplines that shaped me:</p>
+
+      <ul>
+        <li>Lucid Dreaming & Astral Projection</li>
+        <li>Music Production as Sonic Magic</li>
+        <li>Tulpa Creation & Mental Craft</li>
+        <li>Breathwork & Advanced Meditation</li>
+        <li>Psychic Defense & Parapsychology</li>
+      </ul>
+
+      <p>Every ritual, sound, and thought here is a seed of legacy — my gift to the collective mind. This site will soon include:</p>
+
+      <ul>
+        <li>Original music and ritual soundscapes</li>
+        <li>Video transmissions and guided meditations</li>
+        <li>Spiritual classes and online courses</li>
+        <li>Occult articles and dream logs</li>
+        <li>Live sessions, breathwork, and energy tuning</li>
+      </ul>
+
+      <p>Let this be your gateway to the unseen. Your first breath into the soundless ether. Welcome.</p>
+
+      <a href="#" class="btn">Enter the Temple</a>
+    </div>
+  </div>
+
+  <!-- Visualizer Section -->
+  <div class="visualizer-container">
+    <canvas id="visualizer"></canvas>
+    <audio id="audioPlayer" autoplay loop>
+      <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
+    const audio = document.getElementById('audioPlayer');
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = audioContext.createAnalyser();
+    const source = audioContext.createMediaElementSource(audio);
+
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function drawVisualizer() {
+      requestAnimationFrame(drawVisualizer);
+
+      analyser.getByteFrequencyData(dataArray);
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let barHeight;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        barHeight = dataArray[i];
+
+        ctx.fillStyle = `rgb(${barHeight + 100}, 50, ${255 - barHeight})`;
+        ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight);
+
+        x += barWidth + 1;
+      }
+    }
+
+    // Play the audio and initialize visualizer once the audio is ready
+    audio.oncanplaythrough = () => {
+      audio.play();
+      audioContext.resume().then(() => {
+        drawVisualizer();
+      });
+    };
+  </script>
+</body>
+</html>
